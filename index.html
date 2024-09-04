@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Infinitynitrobot Referral System</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <h1>Infinitynitrobot Referral System</h1>
+  <p>Share your unique referral link with friends and earn points!</p>
+  <div id="referral-link-container">
+    <input type="text" id="referral-link" readonly>
+    <button id="copy-link-btn">Copy Link</button>
+  </div>
+  <p id="points-counter">You have 0 points.</p>
+  <button id="share-btn">Share on Telegram</button>
+
+  <script>
+    const referralLinkInput = document.getElementById('referral-link');
+    const copyLinkBtn = document.getElementById('copy-link-btn');
+    const pointsCounter = document.getElementById('points-counter');
+    const shareBtn = document.getElementById('share-btn');
+
+    // Set the referral link
+    const userId = 'YOUR_USER_ID'; // Replace with the user's ID
+    const referralLink = `https://t.me/Infinitynitrobot?startapp=r_${userId}`;
+    referralLinkInput.value = referralLink;
+
+    // Copy link to clipboard
+    copyLinkBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText(referralLink);
+      alert('Link copied to clipboard!');
+    });
+
+    // Share on Telegram
+    shareBtn.addEventListener('click', () => {
+      window.open(`https://t.me/share/url?url=${referralLink}&text=Join+Infinitynitrobot+and+earn+points!`, '_blank');
+    });
+
+    // Update points counter
+    function updatePointsCounter(points) {
+      pointsCounter.textContent = `You have ${points} points.`;
+    }
+
+    // Handle referral link clicks
+    function handleReferralLinkClick() {
+      // Send a request to your server to update the user's points
+      fetch('/update-points', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, points: 100 }),
+      })
+      .then((response) => response.json())
+      .then((data) => {
+        updatePointsCounter(data.points);
+      })
+      .catch((error) => console.error(error));
+    }
+
+    // Listen for referral link clicks
+    window.addEventListener('load', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('startapp')) {
+        handleReferralLinkClick();
+      }
+    });
+  </script>
+</body>
+</html>
